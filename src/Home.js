@@ -12,7 +12,6 @@ class Home extends React.Component {
   createLobby = gameId => {
     let time = new Date().getTime();
     var db = firebase.database().ref();
-    console.log(gameId, time);
     db.child(gameId)
       .child(`timeCreated`)
       .set(time)
@@ -29,6 +28,18 @@ class Home extends React.Component {
       .then(() => {
         this.navigateToLobby(gameId);
       });
+  };
+
+  joinLobby = gameId => {
+    var db = firebase.database().ref();
+
+    db.child(gameId).on("value", snapshot => {
+      if (snapshot.val() === null) {
+        alert("Invalid Game ID");
+      } else {
+        this.navigateToLobby(gameId);
+      }
+    });
   };
 
   navigateToLobby = gameId => {
@@ -61,7 +72,7 @@ class Home extends React.Component {
         <form
           onSubmit={event => {
             event.preventDefault();
-            this.navigateToLobby(this.state.joinId);
+            this.joinLobby(this.state.joinId);
           }}
         >
           <input
