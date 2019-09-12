@@ -1,91 +1,14 @@
 import React from "react";
-import { navigate } from "@reach/router";
-import * as firebase from "firebase/app";
-import "firebase/database";
 
-class Home extends React.Component {
-  state = {
-    createId: "",
-    joinId: ""
-  };
-
-  createLobby = gameId => {
-    let time = new Date().getTime();
-    var db = firebase.database().ref();
-    db.child(gameId)
-      .child(`timeCreated`)
-      .set(time)
-      .then(() => {
-        db.child(gameId)
-          .child(`player1Ready`)
-          .set(false);
-      })
-      .then(() => {
-        db.child(gameId)
-          .child(`player2Ready`)
-          .set(false);
-      })
-      .then(() => {
-        this.navigateToLobby(gameId);
-      });
-  };
-
-  joinLobby = gameId => {
-    var db = firebase.database().ref();
-
-    db.child(gameId).on("value", snapshot => {
-      if (snapshot.val() === null) {
-        alert("Invalid Game ID");
-      } else {
-        this.navigateToLobby(gameId);
-      }
-    });
-  };
-
-  navigateToLobby = gameId => {
-    navigate(`/${gameId}`);
-  };
-
-  storeInput = event => {
-    this.setState({ [event.target.id]: event.target.value });
-  };
-
+class Header extends React.Component {
   render() {
     return (
       <div>
-        <h1>Tien Len</h1>
-        <form
-          onSubmit={event => {
-            event.preventDefault();
-            this.createLobby(this.state.createId);
-          }}
-        >
-          <input
-            required
-            id="createId"
-            placeholder="Choose Lobby ID"
-            onChange={this.storeInput}
-          ></input>
-          <button type="submit">Create Lobby</button>
-        </form>
-        <div></div>
-        <form
-          onSubmit={event => {
-            event.preventDefault();
-            this.joinLobby(this.state.joinId);
-          }}
-        >
-          <input
-            required
-            id="joinId"
-            placeholder="Enter Lobby ID"
-            onChange={this.storeInput}
-          ></input>
-          <button type="submit">Join Lobby</button>
-        </form>
+        <h1>Welcome to Tien Len!</h1>
+        <h3>Please join or create a lobby with another player to play</h3>
       </div>
     );
   }
 }
 
-export default Home;
+export default Header;

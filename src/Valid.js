@@ -14,14 +14,10 @@ export const valid = (selected, previousTurn) => {
   let selTop = selVals[selVals.length - 1];
   let preTop = preVals[preVals.length - 1];
 
-  if (previousTurn === "pass") {
+  if (previousTurn === "Passed" || previousTurn === "Start") {
     preKeys = selKeys;
     preTop = -1;
   }
-
-  console.log(selVals, preVals);
-  console.log(selTop, preTop);
-  console.log(selKeys, preKeys);
 
   //testSingle2
   if (preVals.length === 1 && preVals[0] > 47) {
@@ -35,13 +31,16 @@ export const valid = (selected, previousTurn) => {
       }
     }
     if (selVals.length === 6) {
+      let t = 0;
       for (let i = 0; i < selKeys.length - 2; i += 2) {
         if (Math.floor(selVals[i] / 4) !== Math.floor(selVals[i + 1] / 4)) {
-          return false;
+          t++;
         }
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 2] / 4)) {
-          return false;
+          t++;
         }
+      }
+      if (t === 0) {
         return true;
       }
     }
@@ -50,13 +49,16 @@ export const valid = (selected, previousTurn) => {
   //testDouble2
   if (preVals.length === 2 && preVals[0] > 47) {
     if (selVals.length === 8) {
+      let t = 0;
       for (let i = 0; i < selKeys.length - 2; i += 2) {
         if (Math.floor(selVals[i] / 4) !== Math.floor(selVals[i + 1] / 4)) {
-          return false;
+          t++;
         }
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 2] / 4)) {
-          return false;
+          t++;
         }
+      }
+      if (t === 0) {
         return true;
       }
     }
@@ -65,14 +67,17 @@ export const valid = (selected, previousTurn) => {
   //testTriple2
   if (preVals.length === 3 && preVals[0] > 47) {
     if (selVals.length === 10) {
+      let t = 0;
       for (let i = 0; i < selKeys.length - 2; i += 2) {
         if (Math.floor(selVals[i] / 4) !== Math.floor(selVals[i + 1] / 4)) {
-          return false;
+          t++;
         }
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 2] / 4)) {
-          return false;
+          t++;
         }
-        return true;
+        if (t === 0) {
+          return true;
+        }
       }
     }
   }
@@ -137,18 +142,21 @@ export const valid = (selected, previousTurn) => {
   }
 
   //testString
-  if (selKeys.length === preKeys.length) {
+  if (selKeys.length === preKeys.length && selKeys.length > 2) {
     if (selTop > preTop) {
+      let t = 0;
       for (let i = 0; i < selKeys.length - 1; i++) {
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 1] / 4)) {
-          return false;
+          t++;
         }
         if (
           Math.floor(preVals[i] / 4) + 1 !== Math.floor(preVals[i + 1] / 4) &&
           preTop !== -1
         ) {
-          return false;
+          t++;
         }
+      }
+      if (t === 0) {
         return true;
       }
     }
@@ -157,19 +165,22 @@ export const valid = (selected, previousTurn) => {
   //testDoubleString
   if (selKeys.length === preKeys.length && selKeys.length > 5) {
     if (selTop > preTop) {
+      let t = 0;
       for (let i = 0; i < selKeys.length - 2; i += 2) {
         if (Math.floor(selVals[i] / 4) !== Math.floor(selVals[i + 1] / 4)) {
-          return false;
+          t++;
         }
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 2] / 4)) {
-          return false;
+          t++;
         }
         if (
           Math.floor(preVals[i] / 4) + 1 !== Math.floor(preVals[i + 2] / 4) &&
           preTop !== -1
         ) {
-          return false;
+          t++;
         }
+      }
+      if (t === 0) {
         return true;
       }
     }
