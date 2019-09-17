@@ -19,6 +19,7 @@ class Player extends React.Component {
     previousTurn: "Start",
     selected: {},
     //New games
+    gameTotal: null,
     playerReady: false,
     playerPoints: 0,
     opponentReady: false,
@@ -40,6 +41,9 @@ class Player extends React.Component {
     db.child("playerTurn").on("value", snapshot => {
       this.setState({ playerTurn: snapshot.val() });
     });
+    db.child("gameTotal").on("value", snapshot => {
+      this.setState({ gameTotal: snapshot.val() });
+    });
   }
 
   componentDidUpdate() {
@@ -57,17 +61,14 @@ class Player extends React.Component {
       playerRemaining,
       opponentRemaining,
       playerPoints,
-      opponentPoints,
       playerReady,
-      opponentReady
+      opponentReady,
+      gameTotal
     } = this.state;
     //Start the game
     if (
       started === false &&
-      ((player1 !== false &&
-        player2 !== false &&
-        playerPoints === 0 &&
-        opponentPoints === 0) ||
+      ((player1 !== false && player2 !== false) ||
         (playerReady === true && opponentReady === true))
     ) {
       //Determine players and set start point
@@ -125,7 +126,7 @@ class Player extends React.Component {
 
       //Setting up deck
 
-      if (player === player1) {
+      if (player === player1 && gameTotal === -1) {
         let ranks = [
           "3",
           "4",
@@ -184,10 +185,14 @@ class Player extends React.Component {
         db.child("previousTurn").set("Start");
         db.child(`${player}Hand`).set(playerCardsObj);
         db.child(`${opponent}Hand`).set(opponentCardsObj);
+        if (this.state.gameTotal === -1) {
+          db.child("gameTotal").set(0);
+        }
       }
     }
 
     if (playerRemaining === 0) {
+      this.setState({ gameTotal: this.state.gameTotal + 1 });
       db.child(`${player}Points`)
         .set(playerPoints + 1)
         .then(() => {
@@ -197,6 +202,7 @@ class Player extends React.Component {
       this.setState({ started: "Waiting" });
       db.child(player).set(false);
     } else if (opponentRemaining === 0) {
+      this.setState({ gameTotal: this.state.gameTotal + 1 });
       this.setState({ started: "Waiting" });
       db.child(`${opponent}Remaining`).set(13);
       db.child(player).set(false);
@@ -264,6 +270,14 @@ class Player extends React.Component {
     return arr;
   };
 
+  makeArrayOfLength = num => {
+    let arr = [];
+    for (let i = 0; i < num; i++) {
+      arr.push(i);
+    }
+    return arr;
+  };
+
   restart = () => {
     const gameId = this.props.id;
     var db = firebase
@@ -291,72 +305,74 @@ class Player extends React.Component {
       started
     } = this.state;
     return player1 && player2 ? (
-      <div>
-        <h1>{`${player}-${playerPoints}/${opponent}-${opponentPoints}`}</h1>
-        {/*Top Buttons*/}
-        {playerTurn === player ? (
-          <div>
-            <button
-              onClick={() => {
-                if (this.makeArray(selected).length !== 0) {
-                  if (valid(selected, previousTurn)) {
-                    this.submitTurn(selected);
-                    this.setState({ selected: {} });
-                  } else {
-                    alert("Invalid cards");
-                  }
-                }
-              }}
-            >
-              Submit
-            </button>
-            <button onClick={this.passTurn}>Pass</button>
+      <div id="playerDisplay">
+        <div id="gameInfo">
+          <div id="gameText">
+            <span>{`${player}-${playerPoints}/${opponent}-${opponentPoints}`}</span>
+            <span>
+              {started === "Waiting" || started === false ? (
+                <div>
+                  {playerReady === false ? (
+                    <span>
+                      <button onClick={this.restart}>Play Again</button>
+                    </span>
+                  ) : (
+                    <span>Waiting for {opponent}</span>
+                  )}
+                </div>
+              ) : (
+                <span>{playerTurn}'s turn</span>
+              )}
+            </span>
           </div>
+          <div>
+            {this.makeArrayOfLength(opponentRemaining).map((x, i) => {
+              return (
+                <img
+                  key={i}
+                  id="cardSmall"
+                  alt="Card_Back"
+                  src={require(`./cards/Card_Back.png`)}
+                />
+              );
+            })}
+          </div>
+        </div>
+        {previousTurn === "Passed" || previousTurn === "Start" ? (
+          <div id="previousTurnRow">{previousTurn}</div>
         ) : (
-          <div>{opponent} is thinking</div>
+          <div id="previousTurnRow">
+            {/*Last turn*/}
+            {this.makeArray(previousTurn).map(card => {
+              return (
+                <img
+                  key={`${card.value}`}
+                  id="card"
+                  alt={`${card.rank} of ${card.suit}`}
+                  src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
+                />
+              );
+            })}
+          </div>
         )}
-        <div>
-          <h2>
-            <div>
-              {playerTurn}'s turn, {opponent}'s Cards:{opponentRemaining}
-            </div>
-            <br />
-            {previousTurn === "Passed" || previousTurn === "Start" ? (
-              <div>{previousTurn}</div>
-            ) : (
-              <div>
-                Last turn:
-                {this.makeArray(previousTurn).map(card => {
-                  return (
-                    <img
-                      key={`${card.value}`}
-                      id="card"
-                      alt={`${card.rank} of ${card.suit}`}
-                      src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
-                    />
-                  );
-                })}
-              </div>
-            )}
-            <br />
-            {Object.keys(selected).length === 0 ? (
-              <div>Selected</div>
-            ) : (
-              <div>
-                Selected:
-                {this.makeArray(selected).map(card => {
-                  return (
-                    <img
-                      key={`${card.value}`}
-                      id="card"
-                      alt={`${card.rank} of ${card.suit}`}
-                      src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </h2>
+        {Object.keys(selected).length === 0 ? (
+          <div id="selectRow">--</div>
+        ) : (
+          <div id="selectRow">
+            {/*Selected*/}
+            {this.makeArray(selected).map(card => {
+              return (
+                <img
+                  key={`${card.value}`}
+                  id="cardSmall"
+                  alt={`${card.rank} of ${card.suit}`}
+                  src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
+                />
+              );
+            })}
+          </div>
+        )}
+        <div id="playerRow">
           <div>
             {this.makeArray(playerHand).map(card => {
               return (
@@ -372,26 +388,35 @@ class Player extends React.Component {
               );
             })}
           </div>
-        </div>
-        <div>
-          <div />
-          {started === "Waiting" || started === false ? (
-            <div>
-              {playerReady === false ? (
-                <div>
-                  <button onClick={this.restart}>Play Again</button>
-                </div>
-              ) : (
-                <div>Waiting for {opponent} to play again.</div>
-              )}
+          {/*Game Buttons*/}
+          {playerTurn === player ? (
+            <div id="gameButtons">
+              <button
+                onClick={() => {
+                  if (this.makeArray(selected).length !== 0) {
+                    if (valid(selected, previousTurn)) {
+                      this.submitTurn(selected);
+                      this.setState({ selected: {} });
+                    } else {
+                      alert("Invalid cards");
+                    }
+                  }
+                }}
+              >
+                Submit
+              </button>
+              <button onClick={this.passTurn}>Pass</button>
             </div>
           ) : (
-            <div />
+            <div id="gameButtons">
+              <button disabled>Submit</button>
+              <button disabled>Pass</button>
+            </div>
           )}
         </div>
       </div>
     ) : (
-      <div>Waiting for other player to join</div>
+      <div id="playerDisplay">Waiting for other player to join</div>
     );
   }
 }

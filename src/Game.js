@@ -39,6 +39,11 @@ class Game extends React.Component {
       })
       .then(() => {
         db.child(gameId)
+          .child("gameTotal")
+          .set(-1);
+      })
+      .then(() => {
+        db.child(gameId)
           .child(`player${num}Ready`)
           .once("value", snapshot => {
             navigate(`/${gameId}/${snapshot.val()}`);

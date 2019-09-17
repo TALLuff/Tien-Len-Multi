@@ -3,6 +3,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  font-size: 2vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -14,9 +15,60 @@ code {
 
 #header {
   display: flex;
+  height: 15vh;
+  padding: 1vh 1vw 1vh 1vw;
   justify-content: space-between;
 }
 
 #card {
-  width: 50px;
+  width: 6.5vw;
+}
+
+#cardSmall {
+  width: 5vw;
+}
+
+#gameInfo {
+  width: 100vw;
+  display: flex;
+  justify-content: space-around;
+}
+
+#gameText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#previousTurnRow {
+  height: 9.5vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#selectRow {
+  height: 7.5vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#playerRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+#gameButtons {
+  display: flex;
+  flex-direction: column;
+  width: 15.5vw;
+}
+
+#playerDisplay {
+  height: 80vh;
+  padding: 1.5vh 0 1.5vh 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
