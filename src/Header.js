@@ -65,7 +65,7 @@ class Header extends React.Component {
               placeholder="Choose Lobby ID"
               onChange={this.storeInput}
             ></input>
-            <button type="submit">Create Lobby</button>
+            <button type="submit">New Lobby</button>
           </form>
           <form
             onSubmit={event => {

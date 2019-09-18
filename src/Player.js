@@ -20,14 +20,14 @@ class Player extends React.Component {
     selected: {},
     //New games
     gameTotal: null,
-    playerReady: false,
+    playerReady: null,
     playerPoints: 0,
-    opponentReady: false,
+    opponentReady: null,
     opponentPoints: 0
   };
 
   componentDidMount() {
-    const gameId = this.props.id;
+    const { gameId } = this.props;
     var db = firebase
       .database()
       .ref()
@@ -47,7 +47,7 @@ class Player extends React.Component {
   }
 
   componentDidUpdate() {
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
     let db = firebase
       .database()
       .ref()
@@ -61,21 +61,20 @@ class Player extends React.Component {
       playerRemaining,
       opponentRemaining,
       playerPoints,
+      opponentPoints,
       playerReady,
-      opponentReady,
-      gameTotal
+      opponentReady
     } = this.state;
-    //Start the game
+    //Set values up
     if (
       started === false &&
-      ((player1 !== false && player2 !== false) ||
-        (playerReady === true && opponentReady === true))
+      player1 !== false &&
+      player2 !== false &&
+      playerReady === opponentReady
     ) {
-      //Determine players and set start point
       this.setState({ started: true, selected: {} });
-      let opponent = player === player1 ? player2 : player1;
-      db.child(player).set(false);
 
+      let opponent = player === player1 ? player2 : player1;
       this.setState({ player });
 
       this.setState({ opponent });
@@ -86,17 +85,18 @@ class Player extends React.Component {
       db.child(`previousTurn`).on("value", snapshot => {
         this.setState({ previousTurn: snapshot.val() });
       });
-      db.child(`${player}Remaining`).set(13);
       db.child(`${player}Remaining`).on("value", snapshot => {
         this.setState({ playerRemaining: snapshot.val() });
       });
-      db.child(`${opponent}Remaining`).set(13);
       db.child(`${opponent}Remaining`).on("value", snapshot => {
         this.setState({ opponentRemaining: snapshot.val() });
       });
 
       db.child(player).on("value", snapshot => {
         this.setState({ playerReady: snapshot.val() });
+      });
+      db.child(opponent).on("value", snapshot => {
+        this.setState({ opponentReady: snapshot.val() });
       });
       db.child(`${player}Points`)
         .once("value", snapshot => {
@@ -105,13 +105,10 @@ class Player extends React.Component {
           }
         })
         .then(() => {
-          db.child(`${player}Points`).once("value", snapshot => {
+          db.child(`${player}Points`).on("value", snapshot => {
             this.setState({ playerPoints: snapshot.val() });
           });
         });
-      db.child(opponent).on("value", snapshot => {
-        this.setState({ opponentReady: snapshot.val() });
-      });
       db.child(`${opponent}Points`)
         .once("value", snapshot => {
           if (snapshot.val() === null) {
@@ -119,14 +116,22 @@ class Player extends React.Component {
           }
         })
         .then(() => {
-          db.child(`${opponent}Points`).once("value", snapshot => {
+          db.child(`${opponent}Points`).on("value", snapshot => {
             this.setState({ opponentPoints: snapshot.val() });
           });
         });
+    }
 
-      //Setting up deck
-
-      if (player === player1 && gameTotal === -1) {
+    //Start the game
+    if (playerReady === true && opponentReady === true) {
+      //Determine players and set start point
+      db.child(player).set("inProgress");
+      this.setState({ started: true, selected: {} });
+      if (
+        player === player1 &&
+        this.state.gameTotal ===
+          this.state.playerPoints + this.state.opponentPoints - 1
+      ) {
         let ranks = [
           "3",
           "4",
@@ -184,34 +189,41 @@ class Player extends React.Component {
         db.child("playerTurn").set(playerTurn);
         db.child("previousTurn").set("Start");
         db.child(`${player}Hand`).set(playerCardsObj);
+        db.child(`${player}Remaining`).set(13);
         db.child(`${opponent}Hand`).set(opponentCardsObj);
-        if (this.state.gameTotal === -1) {
-          db.child("gameTotal").set(0);
-        }
+        db.child(`${opponent}Remaining`).set(13);
+        db.child("gameTotal").set(playerPoints + opponentPoints);
       }
     }
 
+    //Setting up deck
+
     if (playerRemaining === 0) {
-      this.setState({ gameTotal: this.state.gameTotal + 1 });
+      db.child(`${opponent}Remaining`).set(13);
       db.child(`${player}Points`)
         .set(playerPoints + 1)
         .then(() => {
-          alert(`You win! ${player} is the champion! :D`);
+          db.child(player)
+            .set(false)
+            .then(() => {
+              alert(`You win! ${player} is the champion! :D`);
+            });
         });
       db.child(`${player}Remaining`).set(13);
       this.setState({ started: "Waiting" });
-      db.child(player).set(false);
     } else if (opponentRemaining === 0) {
-      this.setState({ gameTotal: this.state.gameTotal + 1 });
       this.setState({ started: "Waiting" });
       db.child(`${opponent}Remaining`).set(13);
-      db.child(player).set(false);
-      alert(`You lose! ${opponent} is the champion! D:`);
+      db.child(player)
+        .set(false)
+        .then(() => {
+          alert(`You lose! ${opponent} is the champion! D:`);
+        });
     }
   }
 
   passTurn = () => {
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
     const { opponent } = this.state;
     var db = firebase
       .database()
@@ -223,7 +235,7 @@ class Player extends React.Component {
   };
 
   submitTurn = selected => {
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
     const { player, opponent } = this.state;
     var db = firebase
       .database()
@@ -279,12 +291,11 @@ class Player extends React.Component {
   };
 
   restart = () => {
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
     var db = firebase
       .database()
       .ref()
       .child(gameId);
-    this.setState({ started: false });
     db.child(this.state.player).set(true);
   };
 
@@ -310,11 +321,13 @@ class Player extends React.Component {
           <div id="gameText">
             <span>{`${player}-${playerPoints}/${opponent}-${opponentPoints}`}</span>
             <span>
-              {started === "Waiting" || started === false ? (
+              {started === "Waiting" ||
+              started === false ||
+              (started === true && playerReady === false) ? (
                 <div>
                   {playerReady === false ? (
                     <span>
-                      <button onClick={this.restart}>Play Again</button>
+                      <button onClick={this.restart}>Play again</button>
                     </span>
                   ) : (
                     <span>Waiting for {opponent}</span>
@@ -331,6 +344,7 @@ class Player extends React.Component {
                 <img
                   key={i}
                   id="cardSmall"
+                  className="shadow"
                   alt="Card_Back"
                   src={require(`./cards/Card_Back.png`)}
                 />
@@ -348,6 +362,7 @@ class Player extends React.Component {
                 <img
                   key={`${card.value}`}
                   id="card"
+                  className="shadow"
                   alt={`${card.rank} of ${card.suit}`}
                   src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
                 />
@@ -365,6 +380,7 @@ class Player extends React.Component {
                 <img
                   key={`${card.value}`}
                   id="cardSmall"
+                  className="shadow"
                   alt={`${card.rank} of ${card.suit}`}
                   src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
                 />
@@ -382,6 +398,7 @@ class Player extends React.Component {
                     this.selectCard(card);
                   }}
                   id="card"
+                  className="shadow"
                   alt={`${card.rank} of ${card.suit}`}
                   src={require(`./cards/${card.rank}_of_${card.suit}.png`)}
                 />

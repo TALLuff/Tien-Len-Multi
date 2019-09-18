@@ -13,8 +13,8 @@ class App extends React.Component {
         <Header />
         <Router>
           <Home path="/" />
-          <Game path="/:id" />
-          <Player path="/:id/:player" />
+          <Game path="/:gameId" />
+          <Player path="/:gameId/:player" />
         </Router>
       </div>
     );

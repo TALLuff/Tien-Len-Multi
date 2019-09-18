@@ -10,7 +10,7 @@ class Game extends React.Component {
 
   chooseName = () => {
     var db = firebase.database().ref();
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
 
     db.child(gameId).once("value", snapshot => {
       if (snapshot.child("player1Ready").val() === false) {
@@ -26,7 +26,7 @@ class Game extends React.Component {
 
   playerReady = num => {
     var db = firebase.database().ref();
-    const gameId = this.props.id;
+    const gameId = this.props.gameId;
     const name = this.state.chooseName;
 
     db.child(gameId)
@@ -58,7 +58,7 @@ class Game extends React.Component {
   render() {
     return (
       <div>
-        <h2>Lobby: {this.props.id}</h2>
+        <h2>Lobby: {this.props.gameId}</h2>
         <h3>Please enter your name below to ready up</h3>
         <form
           onSubmit={event => {

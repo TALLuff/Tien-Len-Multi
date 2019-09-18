@@ -28,6 +28,11 @@ code {
   width: 5vw;
 }
 
+.shadow {
+  box-shadow: 0vw 0.5vw 1vw rgb(23, 75, 20),
+    0.5vw 0.5vw 10vw rgb(23, 75, 20, 0.7);
+}
+
 #gameInfo {
   width: 100vw;
   display: flex;
@@ -71,4 +76,5 @@ code {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: rgb(55, 177, 96);
 }
