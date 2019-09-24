@@ -395,6 +395,8 @@ class Player extends React.Component {
                 <img
                   key={`${card.value}`}
                   onClick={() => {
+                    let sound = new Audio("./soundEffects/cardPlace1.wav");
+                    sound.play();
                     this.selectCard(card);
                   }}
                   id="card"
@@ -409,6 +411,7 @@ class Player extends React.Component {
           {playerTurn === player ? (
             <div id="gameButtons">
               <button
+                id="gameButton"
                 onClick={() => {
                   if (this.makeArray(selected).length !== 0) {
                     if (valid(selected, previousTurn)) {
@@ -422,12 +425,18 @@ class Player extends React.Component {
               >
                 Submit
               </button>
-              <button onClick={this.passTurn}>Pass</button>
+              <button id="gameButton" onClick={this.passTurn}>
+                Pass
+              </button>
             </div>
           ) : (
             <div id="gameButtons">
-              <button disabled>Submit</button>
-              <button disabled>Pass</button>
+              <button id="gameButton" disabled>
+                Submit
+              </button>
+              <button id="gameButton" disabled>
+                Pass
+              </button>
             </div>
           )}
         </div>

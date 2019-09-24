@@ -10,6 +10,9 @@ class App extends React.Component {
   render() {
     return (
       <div>
+        <div id="landscape">
+          <h1>Please play this game in landscape!</h1>
+        </div>
         <Header />
         <Router>
           <Home path="/" />

@@ -46,6 +46,7 @@ class Header extends React.Component {
     return (
       <div id="header">
         <h1
+          id="title"
           onClick={() => {
             navigate("/");
           }}
@@ -62,10 +63,13 @@ class Header extends React.Component {
             <input
               required
               id="createId"
+              className="headerForm"
               placeholder="Choose Lobby ID"
               onChange={this.storeInput}
             ></input>
-            <button type="submit">New Lobby</button>
+            <button type="submit" className="headerForm">
+              Create Lobby
+            </button>
           </form>
           <form
             onSubmit={event => {
@@ -76,10 +80,13 @@ class Header extends React.Component {
             <input
               required
               id="joinId"
+              className="headerForm"
               placeholder="Enter Lobby ID"
               onChange={this.storeInput}
             ></input>
-            <button type="submit">Join Lobby</button>
+            <button type="submit" className="headerForm">
+              Join Lobby
+            </button>
           </form>
         </div>
       </div>

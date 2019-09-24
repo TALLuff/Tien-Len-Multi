@@ -57,7 +57,7 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="center">
         <h2>Lobby: {this.props.gameId}</h2>
         <h3>Please enter your name below to ready up</h3>
         <form
