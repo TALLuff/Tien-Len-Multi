@@ -2,6 +2,12 @@ import React from "react";
 import * as firebase from "firebase/app";
 import "firebase/database";
 import { valid } from "./Valid";
+import gameStartAudioIn from "./soundEffects/cardFan1.wav";
+import selectCardAudioIn from "./soundEffects/cardPlace1.wav";
+import passTurnAudioIn from "./soundEffects/cardShove1.wav";
+import playTurnAudioIn from "./soundEffects/cardPlace2.wav";
+import victoryAudioIn from "./soundEffects/victoryff.mp3";
+import lossAudioIn from "./soundEffects/lose.wav";
 
 class Player extends React.Component {
   state = {
@@ -125,6 +131,8 @@ class Player extends React.Component {
     //Start the game
     if (playerReady === true && opponentReady === true) {
       //Determine players and set start point
+      let gameStartAudio = new Audio(gameStartAudioIn);
+      gameStartAudio.play();
       db.child(player).set("inProgress");
       this.setState({ started: true, selected: {} });
       if (
@@ -199,6 +207,8 @@ class Player extends React.Component {
     //Setting up deck
 
     if (playerRemaining === 0) {
+      let victoryAudio = new Audio(victoryAudioIn);
+      victoryAudio.play();
       db.child(`${opponent}Remaining`).set(13);
       db.child(`${player}Points`)
         .set(playerPoints + 1)
@@ -212,6 +222,8 @@ class Player extends React.Component {
       db.child(`${player}Remaining`).set(13);
       this.setState({ started: "Waiting" });
     } else if (opponentRemaining === 0) {
+      let lossAudio = new Audio(lossAudioIn);
+      lossAudio.play();
       this.setState({ started: "Waiting" });
       db.child(`${opponent}Remaining`).set(13);
       db.child(player)
@@ -223,6 +235,8 @@ class Player extends React.Component {
   }
 
   passTurn = () => {
+    let passTurnAudio = new Audio(passTurnAudioIn);
+    passTurnAudio.play();
     const gameId = this.props.gameId;
     const { opponent } = this.state;
     var db = firebase
@@ -235,6 +249,8 @@ class Player extends React.Component {
   };
 
   submitTurn = selected => {
+    let playTurnAudio = new Audio(playTurnAudioIn);
+    playTurnAudio.play();
     const gameId = this.props.gameId;
     const { player, opponent } = this.state;
     var db = firebase
@@ -260,6 +276,8 @@ class Player extends React.Component {
   selectCard = card => {
     if (this.state.selected[card.value] === undefined) {
       this.setState(state => {
+        let selectCardAudio = new Audio(selectCardAudioIn);
+        selectCardAudio.play();
         state.selected[card.value] = card;
         return state;
       });
