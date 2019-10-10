@@ -143,7 +143,7 @@ export const valid = (selected, previousTurn) => {
 
   //testString
   if (selKeys.length === preKeys.length && selKeys.length > 2) {
-    if (selTop > preTop) {
+    if (selTop > preTop && selTop < 48) {
       let t = 0;
       for (let i = 0; i < selKeys.length - 1; i++) {
         if (Math.floor(selVals[i] / 4) + 1 !== Math.floor(selVals[i + 1] / 4)) {
@@ -164,7 +164,7 @@ export const valid = (selected, previousTurn) => {
 
   //testDoubleString
   if (selKeys.length === preKeys.length && selKeys.length > 5) {
-    if (selTop > preTop) {
+    if (selTop > preTop && selTop < 48) {
       let t = 0;
       for (let i = 0; i < selKeys.length - 2; i += 2) {
         if (Math.floor(selVals[i] / 4) !== Math.floor(selVals[i + 1] / 4)) {
