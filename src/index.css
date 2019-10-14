@@ -1,14 +1,26 @@
 @font-face {
-  font-family: "thinFont";
-  src: url("./fonts/Roboto-Thin.ttf");
+  font-family: "lightFont";
+  src: url("./fonts/Roboto-Light.ttf");
 }
 
 body {
   margin: 0;
-  font-family: "thinFont";
+  font-family: "lightFont";
   font-size: 2vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input {
+  border: none;
+  cursor: pointer;
+  padding: 0.1em;
+}
+
+button {
+  background: rgb(56, 94, 67);
+  color: rgb(0, 0, 0);
 }
 
 #header {
@@ -22,6 +34,7 @@ body {
 
 #title {
   font-size: 4vw;
+  cursor: pointer;
 }
 
 .center {
