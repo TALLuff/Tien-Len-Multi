@@ -1,4 +1,4 @@
-## Tien-Len Card Game
+# Tien-Len Card Game
 
 This is a vietnamese card game where the aim is to use tactics and knowledge to get rid of your cards before the opponent can.
 
@@ -6,7 +6,7 @@ Rules can be found here - https://www.pagat.com/climbing/thirteen.html
 
 Project made with React and uses firebase live database for the backend.
 
-# Initial setup
+## Initial setup
 
 Start by running `npm install` to install the node modules.
 
