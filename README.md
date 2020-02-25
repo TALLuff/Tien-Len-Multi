@@ -8,16 +8,16 @@ Project made with React and uses firebase live database for the backend.
 
 # Initial setup
 
-You will need to setup a live firebase database and to connect your project to it using a config file 
+You will need to setup a live firebase database and to connect your project to it using a config file (fill in the values)
 ```
 export default firebaseConfig = {
-  apiKey: "AIzaSyCU36VI_s7BD2aCJTBCTxAomUXh_e0xOsE",
-  authDomain: "tien-len-multi.firebaseapp.com",
-  databaseURL: "https://tien-len-multi.firebaseio.com",
-  projectId: "tien-len-multi",
+  apiKey: "API-key-here",
+  authDomain: "Auth-Domain",
+  databaseURL: "Database-URL",
+  projectId: "Project-ID-here",
   storageBucket: "",
-  messagingSenderId: "137319330002",
-  appId: "1:137319330002:web:34caa6f7891f5a67"
+  messagingSenderId: "Sender-ID",
+  appId: "App-ID"
 };
 ```
 Then run `npm start` to host locally, I hosted mine on netlify to play with friends.
