@@ -8,6 +8,8 @@ Project made with React and uses firebase live database for the backend.
 
 # Initial setup
 
+Start by running `npm install` to install the node modules.
+
 You will need to setup a live firebase database and to connect your project to it using a config file (fill in the values)
 ```
 export default firebaseConfig = {
